@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/library_view"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:gravity="center_vertical">
+
+
+    <ImageView
+        android:id="@+id/library_img"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:src="@mipmap/icon_singer"
+        android:scaleType="center"/>
+
+    <TextView
+        android:id="@+id/library_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:text="我是歌手"
+        android:textSize="17sp"
+        android:textColor="#000000"
+        />
+
+    <TextView
+        android:id="@+id/library_count"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="3dp"
+        android:text="(0)"
+        android:textSize="13sp"
+        android:textColor="#8d8888"
+        />
+
+
+</LinearLayout>

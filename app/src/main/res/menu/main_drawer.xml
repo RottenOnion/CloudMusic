@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/identify_song"
+            android:title="听歌识曲">
+        </item>
+
+        <item
+            android:id="@+id/scan"
+            android:title="扫一扫">
+        </item>
+
+        <item
+            android:id="@+id/setting"
+            android:title="设置">
+        </item>
+
+        <item
+            android:id="@+id/exit"
+            android:title="退出">
+        </item>
+
+    </group>
+</menu>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="60dp">
+
+    <TextView
+        android:gravity="center"
+        android:id="@+id/song_number"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:textSize="22sp"
+        android:text="1"
+        android:textColor="#837f7f"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/song_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:text="我喜欢的音乐"
+            />
+
+        <TextView
+            android:id="@+id/song_singer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="15sp"
+            android:textColor="#8d8888"
+            android:text="335首"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="right">
+        <ImageButton
+            android:id="@+id/song_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+
+            />
+
+    </LinearLayout>
+
+
+</LinearLayout>
