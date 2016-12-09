@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.cloudmusic.R;
@@ -19,7 +20,7 @@ import java.util.List;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.songVH>{
     private List<LocalSong> list = new ArrayList<>();
-    private OnItemClickListener clickListener;
+    private static OnItemClickListener clickListener;
 
     public SongAdapter(List<LocalSong> list) {
         this.list = list;
@@ -33,28 +34,41 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.songVH>{
 
     @Override
     public void onBindViewHolder(songVH holder, int position) {
-
+        LocalSong localSong = list.get(position);
+        holder.songName.setText(localSong.getSong());
+        holder.songSinger.setText(localSong.getSinger());
+        holder.songNumber.setText(String.valueOf(position));
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return list == null? 0 : list.size();
     }
 
     public static class songVH extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView songNumber;
         private TextView songName;
         private TextView songSinger;
+        private LinearLayout songView;
         public songVH(View itemView) {
             super(itemView);
             songNumber = (TextView) itemView.findViewById(R.id.song_number);
             songName = (TextView) itemView.findViewById(R.id.song_name);
             songSinger = (TextView) itemView.findViewById(R.id.song_singer);
+            songView = (LinearLayout) itemView.findViewById(R.id.song_view);
+
+            songView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-
+            if (clickListener != null){
+                clickListener.onClick(itemView,getAdapterPosition());
+            }
         }
+    }
+
+    public void setClickListener(OnItemClickListener clickListener) {
+        this.clickListener = clickListener;
     }
 }

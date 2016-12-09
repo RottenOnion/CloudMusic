@@ -31,7 +31,7 @@ public class ScanMusic {
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 LocalSong song = new LocalSong();
-                song.setSong(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)));
+                song.setSong(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)).replace(".mp3","").replace(" ",""));
                 song.setSinger(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)));
                 song.setPath(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)));
                 song.setDuration(cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)));
@@ -41,6 +41,9 @@ public class ScanMusic {
                     song.setSinger(str[0]);
                     song.setSong(str[1]);
                 }
+
+
+
                 songList.add(song);
             }
             cursor.close();

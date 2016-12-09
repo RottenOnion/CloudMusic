@@ -1,5 +1,6 @@
 package com.example.cloudmusic.module;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -51,12 +52,15 @@ public class MainActivity extends AppCompatActivity {
         initLibraries();
         adapter = new LibraryAdapter(libraries);
         libraryRv.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
-        libraryRv.addItemDecoration(new RecycleViewDivider(this,LinearLayoutManager.HORIZONTAL,2, Color.parseColor("#DCDCDC"),120));
+        libraryRv.addItemDecoration(new RecycleViewDivider(this,LinearLayoutManager.HORIZONTAL,2, Color.parseColor("#DCDCDC"),128));
         adapter.setClickListener(new OnItemClickListener() {
             @Override
             public void onClick(View view, int position) {
                 //libraryRv点击事件
-
+                if (position == 0) {
+                    Intent intent = new Intent(MainActivity.this,LibraryActivity.class);
+                    startActivity(intent);
+                }
             }
         });
         libraryRv.setAdapter(adapter);
