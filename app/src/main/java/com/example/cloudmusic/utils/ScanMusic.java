@@ -9,6 +9,8 @@ import com.example.cloudmusic.bean.LocalSong;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable;
+
 /**
  * Created by py on 2016/12/8.
  */
@@ -24,7 +26,7 @@ public class ScanMusic {
         return instance;
     }
 
-    public List<LocalSong> getSongList(Context context) {
+    public Observable<List<LocalSong>> getSongList(Context context) {
         songList = new ArrayList<>();
         Cursor cursor = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,null,null,MediaStore.Audio.AudioColumns.IS_MUSIC);
@@ -48,7 +50,9 @@ public class ScanMusic {
             }
             cursor.close();
         }
-        return songList;
+
+        Observable<List<LocalSong>> observable = Observable.just(songList);
+        return observable;
     }
 
 }

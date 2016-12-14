@@ -1,4 +1,4 @@
-package com.example.cloudmusic.module;
+package com.example.cloudmusic.module.activity;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -18,6 +18,7 @@ import com.example.cloudmusic.adapter.LibraryAdapter;
 import com.example.cloudmusic.adapter.RecycleViewDivider;
 import com.example.cloudmusic.bean.Library;
 import com.example.cloudmusic.listener.OnItemClickListener;
+import com.example.cloudmusic.module.service.PlayService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Intent serviceIntent = new Intent(MainActivity.this, PlayService.class);
+        startService(serviceIntent);
+
         libraryRv = (RecyclerView) findViewById(R.id.main_recycler_view);
 
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
@@ -45,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle("音乐");
         setSupportActionBar(toolbar);
 
-        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.app_name,R.string.app_name);
+                ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.app_name,R.string.app_name);
         drawerToggle.syncState();
         drawerLayout.addDrawerListener(drawerToggle);
 

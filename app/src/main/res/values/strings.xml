@@ -4,4 +4,8 @@
     <string name="recent_play">最近播放</string>
     <string name="download">下载管理</string>
     <string name="my_singer">我的歌手</string>
+    <string name="android.CloudMusic.SEND_TO_SERVICE">android.CloudMusic.SEND_TO_SERVICE</string>
+    <string name="android.CloudMusic.PAUSE">android.CloudMusic.PAUSE</string>
+    <string name="android.CloudMusic.NEXT">android.CloudMusic.NEXT</string>
+    <string name="android.CloudMusic.PREV">android.CloudMusic.PREV</string>
 </resources>

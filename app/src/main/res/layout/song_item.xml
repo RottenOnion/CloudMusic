@@ -36,7 +36,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
-
             android:textSize="12sp"
             android:textColor="#8d8888"
             android:text="335首"/>

@@ -10,7 +10,7 @@
         android:theme="@style/CloudRedTheme">
 
 
-        <activity android:name=".module.MainActivity">
+        <activity android:name=".module.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,12 +18,17 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".module.LibraryActivity">
+        <activity android:name=".module.activity.LibraryActivity">
 
         </activity>
         <activity android:name=".BaseActivity">
 
         </activity>
+
+
+        <service android:name=".module.service.PlayService">
+
+        </service>
 
     </application>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
