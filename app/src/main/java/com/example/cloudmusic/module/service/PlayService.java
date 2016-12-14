@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import com.example.cloudmusic.bean.LocalSong;
@@ -29,6 +30,7 @@ public class PlayService extends Service {
     private PlayServiceReceiver receiver;
     private List<LocalSong> songList;
     private int currPosition;
+    private LocalBroadcastManager localBroadcastManager;
     private static final String SEND_TO_SERVICE = "android_CloudMusic_SEND_TO_SERVICE";
     private static final int SEQUENTIAL = 1,LISTLOOP = 2,RANDOM = 3,SINGLE = 4;
 
@@ -40,7 +42,8 @@ public class PlayService extends Service {
         receiver = new PlayServiceReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(SEND_TO_SERVICE);
-        registerReceiver(receiver,filter);
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        localBroadcastManager.registerReceiver(receiver,filter);
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -103,6 +106,7 @@ public class PlayService extends Service {
             mediaPlayer = null;
         }
         stopSelf();
+        localBroadcastManager.unregisterReceiver(receiver);
         super.onDestroy();
     }
 
@@ -203,6 +207,6 @@ public class PlayService extends Service {
             String musicPath = song.getPath();
             play(musicPath);
         }
-    }.
-    
+    }
+
 }
