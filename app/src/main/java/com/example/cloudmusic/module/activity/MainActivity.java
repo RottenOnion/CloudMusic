@@ -6,13 +6,13 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
 
+import com.example.cloudmusic.BaseActivity;
 import com.example.cloudmusic.R;
 import com.example.cloudmusic.adapter.LibraryAdapter;
 import com.example.cloudmusic.adapter.RecycleViewDivider;
@@ -23,7 +23,7 @@ import com.example.cloudmusic.module.service.PlayService;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     private RecyclerView libraryRv;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Toolbar toolbar;

@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
+import com.example.cloudmusic.App;
 import com.example.cloudmusic.bean.LocalSong;
 
 import java.io.IOException;
@@ -31,7 +32,6 @@ public class PlayService extends Service {
     private List<LocalSong> songList;
     private int currPosition;
     private LocalBroadcastManager localBroadcastManager;
-    private static final String SEND_TO_SERVICE = "android_CloudMusic_SEND_TO_SERVICE";
     private static final int SEQUENTIAL = 1,LISTLOOP = 2,RANDOM = 3,SINGLE = 4;
 
     @Override
@@ -41,9 +41,10 @@ public class PlayService extends Service {
         mediaPlayer = new MediaPlayer();
         receiver = new PlayServiceReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(SEND_TO_SERVICE);
+        filter.addAction(App.BROADCAST_SEND_TO_PLAY_SERVICE);
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.registerReceiver(receiver,filter);
+        //registerReceiver(receiver,filter);
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -87,7 +88,8 @@ public class PlayService extends Service {
         mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-                mediaPlayer.stop();
+                Toast.makeText(PlayService.this, "播放出错了！为您播放下一首", Toast.LENGTH_SHORT).show();
+                next();
                 return false;
             }
         });
@@ -106,7 +108,8 @@ public class PlayService extends Service {
             mediaPlayer = null;
         }
         stopSelf();
-        localBroadcastManager.unregisterReceiver(receiver);
+        if (localBroadcastManager != null)
+            localBroadcastManager.unregisterReceiver(receiver);
         super.onDestroy();
     }
 
@@ -200,12 +203,34 @@ public class PlayService extends Service {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            songList = intent.getParcelableArrayListExtra("com.example.cloudmusic.bean");
-            currPosition = intent.getIntExtra("position",0);
-            playMode = intent.getIntExtra("playMode",LISTLOOP);
-            LocalSong song = songList.get(currPosition);
-            String musicPath = song.getPath();
-            play(musicPath);
+            int instruction = intent.getIntExtra("instruction",-1);
+            switch (instruction) {
+                case App.CLICK_SONG:
+                    songList = intent.getParcelableArrayListExtra("com.example.cloudmusic.bean");
+                    currPosition = intent.getIntExtra("position", 0);
+                    playMode = intent.getIntExtra("playMode", LISTLOOP);
+                    LocalSong song = songList.get(currPosition);
+                    String musicPath = song.getPath();
+                    play(musicPath);
+                    break;
+
+                case App.PREV_SONG:
+                    if (songList != null) {
+                        prev();
+                    }
+                    break;
+
+                case App.NEXT_SONG:
+                    if (songList != null) {
+                        next();
+                    }
+                    break;
+
+                case App.PLAY_SONG:
+                    if (songList != null) {
+                        pauseAndresume();
+                    }
+            }
         }
     }
 

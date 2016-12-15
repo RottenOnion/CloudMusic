@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.cloudmusic.App;
 import com.example.cloudmusic.BaseActivity;
 import com.example.cloudmusic.R;
 import com.example.cloudmusic.adapter.RecycleViewDivider;
@@ -37,12 +39,12 @@ public class LibraryActivity extends BaseActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private Toolbar toolbar;
     private List<LocalSong> songList;
+    private LocalBroadcastManager localBroadcastManager;
 
     Subscriber<List<LocalSong>> subscriber = new Subscriber<List<LocalSong>>() {
 
         @Override
         public void onCompleted() {
-
         }
 
         @Override
@@ -62,10 +64,12 @@ public class LibraryActivity extends BaseActivity {
                 @Override
                 public void onClick(View view, int position) {
                     Intent intent = new Intent();
-                    intent.setAction("android_CloudMusic_SEND_TO_SERVICE");
+                    intent.setAction(App.BROADCAST_SEND_TO_PLAY_SERVICE);
                     intent.putParcelableArrayListExtra("com.example.cloudmusic.bean", (ArrayList<? extends Parcelable>) songList);
                     intent.putExtra("position",position);
-                    sendBroadcast(intent);
+                    intent.putExtra("instruction",App.CLICK_SONG);
+                    localBroadcastManager = LocalBroadcastManager.getInstance(LibraryActivity.this);
+                    localBroadcastManager.sendBroadcast(intent);
                 }
             });
             songRV.setAdapter(adapter);
