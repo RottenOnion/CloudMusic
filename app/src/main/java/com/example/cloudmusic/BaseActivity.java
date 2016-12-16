@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import rx.Subscription;
 
@@ -25,33 +26,35 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
     private FrameLayout contentContainer;
     private View floatView;
     protected Subscription subscription;
-    private ImageButton btnPlayPause,btnPrev,btnNext;
+    protected ImageButton btnPlayPause,btnPrev,btnNext;
+    private LinearLayout linearLayout;
     private LocalBroadcastManager localBroadcastManager;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.bottom_activity);
         ViewGroup decorView = (ViewGroup) getWindow().getDecorView();
         contentContainer = (FrameLayout) ((ViewGroup)decorView.getChildAt(0)).getChildAt(1);
         floatView = LayoutInflater.from(getBaseContext()).inflate(R.layout.bottom_activity,null);
-        btnPrev = (ImageButton) findViewById(R.id.btn_prev_song);
-        btnPlayPause = (ImageButton) findViewById(R.id.btn_play_pause);
-        btnNext = (ImageButton) findViewById(R.id.btn_next_song);
-        btnPrev.setOnClickListener(this);
-        btnPlayPause.setOnClickListener(this);
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        btnPlayPause = (ImageButton) floatView.findViewById(R.id.btn_play_pause);
+        btnPrev = (ImageButton) floatView.findViewById(R.id.btn_prev_song);
+        btnNext = (ImageButton) floatView.findViewById(R.id.btn_next_song);
+        linearLayout = (LinearLayout) floatView.findViewById(R.id.float_activity_view);
+        linearLayout.setOnClickListener(this);
         btnNext.setOnClickListener(this);
+        btnPlayPause.setOnClickListener(this);
+        btnPrev.setOnClickListener(this);
+
     }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,140);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,155);
         layoutParams.gravity = Gravity.BOTTOM;
         contentContainer.addView(floatView,layoutParams);
-
-        localBroadcastManager = LocalBroadcastManager.getInstance(this);
     }
 
     @Override
@@ -89,6 +92,7 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
                 localBroadcastManager.sendBroadcast(prevIntent);
                 break;
             case R.id.btn_play_pause:
+                
                 Intent playIntent = new Intent();
                 playIntent.setAction(App.BROADCAST_SEND_TO_PLAY_SERVICE);
                 playIntent.putExtra("instruction",App.PLAY_SONG);
@@ -99,6 +103,9 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
                 nextIntent.setAction(App.BROADCAST_SEND_TO_PLAY_SERVICE);
                 nextIntent.putExtra("instruction",App.NEXT_SONG);
                 localBroadcastManager.sendBroadcast(nextIntent);
+                break;
+            case R.id.float_activity_view:
+
                 break;
         }
     }

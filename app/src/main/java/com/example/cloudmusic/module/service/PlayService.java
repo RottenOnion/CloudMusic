@@ -141,6 +141,7 @@ public class PlayService extends Service {
 
     protected void pauseAndresume() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+
             mediaPlayer.pause();
         }
         else if (mediaPlayer !=null && !mediaPlayer.isPlaying()) {
@@ -149,6 +150,7 @@ public class PlayService extends Service {
     }
 
     protected void next() {
+        mediaPlayer.reset();
         switch (playMode) {
             case SEQUENTIAL:
             case LISTLOOP:
@@ -174,6 +176,7 @@ public class PlayService extends Service {
     }
 
     protected void prev() {
+        mediaPlayer.reset();
         switch (playMode) {
             case SEQUENTIAL:
             case LISTLOOP:

@@ -73,6 +73,7 @@ public class LibraryActivity extends BaseActivity {
                 }
             });
             songRV.setAdapter(adapter);
+
         }
 
         @Override
@@ -80,6 +81,7 @@ public class LibraryActivity extends BaseActivity {
             super.onStart();
             swipeRefreshLayout.setRefreshing(true);
         }
+
     };
 
     @Override
@@ -95,7 +97,7 @@ public class LibraryActivity extends BaseActivity {
 
 
 
-        ScanMusic.getInstance().getSongList(this)
+         ScanMusic.getInstance().getSongList(this)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
@@ -103,5 +105,6 @@ public class LibraryActivity extends BaseActivity {
 
 
     }
+
 
 }
