@@ -4,7 +4,7 @@
     <item
         android:id="@+id/action_search"
         android:title="Search"
-        android:icon="@mipmap/icon_search"
+        android:icon="@mipmap/ic_search"
         app:showAsAction="ifRoom"
         />
 </menu>

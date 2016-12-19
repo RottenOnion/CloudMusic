@@ -92,7 +92,7 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
                 localBroadcastManager.sendBroadcast(prevIntent);
                 break;
             case R.id.btn_play_pause:
-                
+
                 Intent playIntent = new Intent();
                 playIntent.setAction(App.BROADCAST_SEND_TO_PLAY_SERVICE);
                 playIntent.putExtra("instruction",App.PLAY_SONG);
