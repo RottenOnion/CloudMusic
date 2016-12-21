@@ -2,9 +2,11 @@ package com.example.cloudmusic;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,11 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+
+import com.example.cloudmusic.bean.SongData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import rx.Subscription;
 
@@ -28,7 +35,8 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
     protected Subscription subscription;
     protected ImageButton btnPlayPause,btnPrev,btnNext;
     private LinearLayout linearLayout;
-    private LocalBroadcastManager localBroadcastManager;
+    protected LocalBroadcastManager localBroadcastManager;
+
 
 
     @Override
@@ -37,7 +45,7 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
         ViewGroup decorView = (ViewGroup) getWindow().getDecorView();
         contentContainer = (FrameLayout) ((ViewGroup)decorView.getChildAt(0)).getChildAt(1);
         floatView = LayoutInflater.from(getBaseContext()).inflate(R.layout.bottom_activity,null);
-        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        localBroadcastManager = LocalBroadcastManager.getInstance(getBaseContext());
         btnPlayPause = (ImageButton) floatView.findViewById(R.id.btn_play_pause);
         btnPrev = (ImageButton) floatView.findViewById(R.id.btn_prev_song);
         btnNext = (ImageButton) floatView.findViewById(R.id.btn_next_song);
@@ -46,6 +54,7 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
         btnNext.setOnClickListener(this);
         btnPlayPause.setOnClickListener(this);
         btnPrev.setOnClickListener(this);
+        localBroadcastManager = LocalBroadcastManager.getInstance(App.getContext());
 
     }
 
@@ -77,6 +86,7 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
 
     protected void unsubscribe () {
         if (subscription != null && !subscription.isUnsubscribed()) {
+            Log.e("解绑","大哥我解绑了");
             subscription.unsubscribe();
         }
     }
@@ -109,4 +119,15 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
+
+    protected void sendToPlay(String listTag, List<SongData> list,int position,int instruction) {
+        Intent intent = new Intent();
+        intent.setAction(App.BROADCAST_SEND_TO_PLAY_SERVICE);
+        intent.putParcelableArrayListExtra(listTag, (ArrayList<? extends Parcelable>) list);
+        intent.putExtra("position",position);
+        intent.putExtra("instruction",instruction);
+        localBroadcastManager.sendBroadcast(intent);
+    }
+
+
 }

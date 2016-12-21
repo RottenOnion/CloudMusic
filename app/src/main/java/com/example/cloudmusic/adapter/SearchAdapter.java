@@ -12,53 +12,58 @@ import com.example.cloudmusic.R;
 import com.example.cloudmusic.bean.SongData;
 import com.example.cloudmusic.listener.OnItemClickListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by py on 2016/12/8.
+ * Created by py on 2016/12/20.
  */
 
-public class SongAdapter extends RecyclerView.Adapter<SongAdapter.songVH>{
-    private List<SongData> list = new ArrayList<>();
+public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.searchVH>{
+
     private static OnItemClickListener clickListener;
+    private List<SongData> songDatas ;
 
-    public SongAdapter(List<SongData> list) {
-        this.list = list;
+    public SearchAdapter(List<SongData> songDatas) {
+        this.songDatas = songDatas;
+    }
+
+    public void update(List<SongData> newSongDatas){
+        this.songDatas.clear();
+        this.songDatas.addAll(newSongDatas);
     }
 
     @Override
-    public songVH onCreateViewHolder(ViewGroup parent, int viewType) {
+    public searchVH onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.song_item,parent,false);
-        return new songVH(view);
+        return new searchVH(view);
     }
 
     @Override
-    public void onBindViewHolder(songVH holder, int position) {
-        SongData SongData = list.get(position);
-        holder.songName.setText(SongData.getSongname());
-        holder.songSinger.setText(SongData.getSingername());
-        holder.songNumber.setText(String.valueOf(position));
+    public void onBindViewHolder(searchVH holder, int position) {
+        SongData song = songDatas.get(position);
+        holder.songName.setText(song.getSongname());
+        holder.songNumber.setText(String.valueOf(position+1));
+        holder.singerName.setText(song.getSingername());
     }
 
     @Override
     public int getItemCount() {
-        return list == null? 0 : list.size();
+        return songDatas == null? 0 : songDatas.size();
     }
 
-    public static class songVH extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class searchVH extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView songNumber;
         private TextView songName;
-        private TextView songSinger;
+        private TextView singerName;
         private ImageButton songBtn;
         private LinearLayout songView;
-        public songVH(View itemView) {
+        public searchVH(View itemView) {
             super(itemView);
             songNumber = (TextView) itemView.findViewById(R.id.song_number);
             songName = (TextView) itemView.findViewById(R.id.song_name);
-            songSinger = (TextView) itemView.findViewById(R.id.song_singer);
-            songBtn = (ImageButton) itemView.findViewById(R.id.song_btn);
+            singerName = (TextView) itemView.findViewById(R.id.song_singer);
             songView = (LinearLayout) itemView.findViewById(R.id.song_view);
+            songBtn = (ImageButton) itemView.findViewById(R.id.song_btn);
 
             songView.setOnClickListener(this);
         }

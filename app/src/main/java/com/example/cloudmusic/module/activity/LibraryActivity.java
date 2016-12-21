@@ -1,11 +1,8 @@
 package com.example.cloudmusic.module.activity;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,11 +15,10 @@ import com.example.cloudmusic.BaseActivity;
 import com.example.cloudmusic.R;
 import com.example.cloudmusic.adapter.RecycleViewDivider;
 import com.example.cloudmusic.adapter.SongAdapter;
-import com.example.cloudmusic.bean.LocalSong;
+import com.example.cloudmusic.bean.SongData;
 import com.example.cloudmusic.listener.OnItemClickListener;
 import com.example.cloudmusic.utils.ScanMusic;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import rx.Subscriber;
@@ -38,10 +34,10 @@ public class LibraryActivity extends BaseActivity {
     private RecyclerView songRV;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Toolbar toolbar;
-    private List<LocalSong> songList;
-    private LocalBroadcastManager localBroadcastManager;
+    private List<SongData> songList;
 
-    Subscriber<List<LocalSong>> subscriber = new Subscriber<List<LocalSong>>() {
+
+    Subscriber<List<SongData>> subscriber = new Subscriber<List<SongData>>() {
 
         @Override
         public void onCompleted() {
@@ -54,7 +50,7 @@ public class LibraryActivity extends BaseActivity {
         }
 
         @Override
-        public void onNext(List<LocalSong> list) {
+        public void onNext(List<SongData> list) {
             swipeRefreshLayout.setRefreshing(false);
             songList = list;
             songRV.setLayoutManager(new LinearLayoutManager(LibraryActivity.this,LinearLayoutManager.VERTICAL,false));
@@ -63,13 +59,7 @@ public class LibraryActivity extends BaseActivity {
             adapter.setClickListener(new OnItemClickListener() {
                 @Override
                 public void onClick(View view, int position) {
-                    Intent intent = new Intent();
-                    intent.setAction(App.BROADCAST_SEND_TO_PLAY_SERVICE);
-                    intent.putParcelableArrayListExtra("com.example.cloudmusic.bean", (ArrayList<? extends Parcelable>) songList);
-                    intent.putExtra("position",position);
-                    intent.putExtra("instruction",App.CLICK_SONG);
-                    localBroadcastManager = LocalBroadcastManager.getInstance(LibraryActivity.this);
-                    localBroadcastManager.sendBroadcast(intent);
+                    sendToPlay("com.example.cloudmusic.bean.songdata",songList,position,App.CLICK_SONG);
                 }
             });
             songRV.setAdapter(adapter);

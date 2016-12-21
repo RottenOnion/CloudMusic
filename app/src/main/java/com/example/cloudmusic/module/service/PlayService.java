@@ -13,7 +13,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import com.example.cloudmusic.App;
-import com.example.cloudmusic.bean.LocalSong;
+import com.example.cloudmusic.bean.SongData;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,7 +29,7 @@ public class PlayService extends Service {
     private String path;
     private int playMode = LISTLOOP;
     private PlayServiceReceiver receiver;
-    private List<LocalSong> songList;
+    private List<SongData> songList;
     private int currPosition;
     private LocalBroadcastManager localBroadcastManager;
     private static final int SEQUENTIAL = 1,LISTLOOP = 2,RANDOM = 3,SINGLE = 4;
@@ -59,7 +59,7 @@ public class PlayService extends Service {
                             pauseAndresume();
                         }
                         else
-                            play(songList.get(currPosition).getPath());
+                            play(songList.get(currPosition).getM4a());
 
                         break;
 
@@ -68,17 +68,17 @@ public class PlayService extends Service {
                         if (currPosition >= songList.size()) {
                             currPosition = 0;
                         }
-                        play(songList.get(currPosition).getPath());
+                        play(songList.get(currPosition).getM4a());
                         break;
 
                     case RANDOM:
                         Random random = new Random();
                         currPosition = random.nextInt(songList.size());
-                        play(songList.get(currPosition).getPath());
+                        play(songList.get(currPosition).getM4a());
                         break;
 
                     case SINGLE:
-                        play(songList.get(currPosition).getPath());
+                        play(songList.get(currPosition).getM4a());
                         break;
                     default:break;
                 }
@@ -158,18 +158,18 @@ public class PlayService extends Service {
                 if (currPosition >= songList.size()) {
                     currPosition = 0;
                 }
-                play(songList.get(currPosition).getPath());
+                play(songList.get(currPosition).getM4a());
 
                 break;
 
             case RANDOM:
                 Random random = new Random();
                 currPosition = random.nextInt(songList.size());
-                play(songList.get(currPosition).getPath());
+                play(songList.get(currPosition).getM4a());
                 break;
 
             case SINGLE:
-                play(songList.get(currPosition).getPath());
+                play(songList.get(currPosition).getM4a());
                 break;
             default:break;
         }
@@ -184,18 +184,18 @@ public class PlayService extends Service {
                 if (currPosition >= songList.size()) {
                     currPosition = 0;
                 }
-                play(songList.get(currPosition).getPath());
+                play(songList.get(currPosition).getM4a());
 
                 break;
 
             case RANDOM:
                 Random random = new Random();
                 currPosition = random.nextInt(songList.size());
-                play(songList.get(currPosition).getPath());
+                play(songList.get(currPosition).getM4a());
                 break;
 
             case SINGLE:
-                play(songList.get(currPosition).getPath());
+                play(songList.get(currPosition).getM4a());
                 break;
             default:
                 break;
@@ -209,11 +209,11 @@ public class PlayService extends Service {
             int instruction = intent.getIntExtra("instruction",-1);
             switch (instruction) {
                 case App.CLICK_SONG:
-                    songList = intent.getParcelableArrayListExtra("com.example.cloudmusic.bean");
+                    songList = intent.getParcelableArrayListExtra("com.example.cloudmusic.bean.songdata");
                     currPosition = intent.getIntExtra("position", 0);
                     playMode = intent.getIntExtra("playMode", LISTLOOP);
-                    LocalSong song = songList.get(currPosition);
-                    String musicPath = song.getPath();
+                    SongData song = songList.get(currPosition);
+                    String musicPath = song.getM4a();
                     play(musicPath);
                     break;
 
