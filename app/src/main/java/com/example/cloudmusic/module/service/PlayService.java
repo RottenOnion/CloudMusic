@@ -19,6 +19,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
+import static com.example.cloudmusic.App.LISTLOOP;
+import static com.example.cloudmusic.App.RANDOM;
+import static com.example.cloudmusic.App.SEQUENTIAL;
+import static com.example.cloudmusic.App.SINGLE;
+
 /**
  * Created by py on 2016/12/13.
  */
@@ -27,12 +32,12 @@ public class PlayService extends Service {
 
     private MediaPlayer mediaPlayer;
     private String path;
-    private int playMode = LISTLOOP;
+    private int playMode = App.LISTLOOP;
     private PlayServiceReceiver receiver;
     private List<SongData> songList;
     private int currPosition;
     private LocalBroadcastManager localBroadcastManager;
-    private static final int SEQUENTIAL = 1,LISTLOOP = 2,RANDOM = 3,SINGLE = 4;
+
 
     @Override
     public void onCreate() {
@@ -44,15 +49,19 @@ public class PlayService extends Service {
         filter.addAction(App.BROADCAST_SEND_TO_PLAY_SERVICE);
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.registerReceiver(receiver,filter);
-        //registerReceiver(receiver,filter);
 
+        setMediaListener();
+
+    }
+
+    private void setMediaListener() {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 mediaPlayer.reset();
 
                 switch (playMode) {
-                    case SEQUENTIAL:
+                    case App.SEQUENTIAL:
                         currPosition++;
                         if (currPosition >= songList.size()) {
                             mediaPlayer.seekTo(0);
@@ -63,7 +72,7 @@ public class PlayService extends Service {
 
                         break;
 
-                    case LISTLOOP:
+                    case App.LISTLOOP:
                         currPosition++;
                         if (currPosition >= songList.size()) {
                             currPosition = 0;
@@ -71,13 +80,13 @@ public class PlayService extends Service {
                         play(songList.get(currPosition).getM4a());
                         break;
 
-                    case RANDOM:
+                    case App.RANDOM:
                         Random random = new Random();
                         currPosition = random.nextInt(songList.size());
                         play(songList.get(currPosition).getM4a());
                         break;
 
-                    case SINGLE:
+                    case App.SINGLE:
                         play(songList.get(currPosition).getM4a());
                         break;
                     default:break;
@@ -93,6 +102,8 @@ public class PlayService extends Service {
                 return false;
             }
         });
+
+
     }
 
     @Override
@@ -122,15 +133,21 @@ public class PlayService extends Service {
 
     protected void play(String path) {
         try {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.reset();
-            }
+            mediaPlayer.reset();
+
             mediaPlayer.setDataSource(path);
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.prepareAsync();
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
+                    Intent intent = new Intent();
+                    intent.setAction(App.BROADCAST_SEND_TO_UPDATE);
+                    intent.putExtra("isPlay",true);
+                    intent.putExtra("playMode",playMode);
+                    intent.putExtra("duration",mediaPlayer.getDuration());
+                    intent.putExtra("nowSong",songList.get(currPosition));
+                    localBroadcastManager.sendBroadcast(intent);
                     mediaPlayer.start();
                 }
             });
@@ -152,8 +169,8 @@ public class PlayService extends Service {
     protected void next() {
         mediaPlayer.reset();
         switch (playMode) {
-            case SEQUENTIAL:
-            case LISTLOOP:
+            case App.SEQUENTIAL:
+            case App.LISTLOOP:
                 currPosition++;
                 if (currPosition >= songList.size()) {
                     currPosition = 0;
@@ -162,13 +179,13 @@ public class PlayService extends Service {
 
                 break;
 
-            case RANDOM:
+            case App.RANDOM:
                 Random random = new Random();
                 currPosition = random.nextInt(songList.size());
                 play(songList.get(currPosition).getM4a());
                 break;
 
-            case SINGLE:
+            case App.SINGLE:
                 play(songList.get(currPosition).getM4a());
                 break;
             default:break;
