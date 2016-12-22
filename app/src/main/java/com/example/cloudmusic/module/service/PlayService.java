@@ -18,11 +18,15 @@ import com.example.cloudmusic.bean.SongData;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.example.cloudmusic.App.LISTLOOP;
 import static com.example.cloudmusic.App.RANDOM;
 import static com.example.cloudmusic.App.SEQUENTIAL;
 import static com.example.cloudmusic.App.SINGLE;
+import static com.example.cloudmusic.App.currDuration;
+import static com.example.cloudmusic.App.duration;
 
 /**
  * Created by py on 2016/12/13.
@@ -37,6 +41,8 @@ public class PlayService extends Service {
     private List<SongData> songList;
     private int currPosition;
     private LocalBroadcastManager localBroadcastManager;
+    private Timer timer;
+    private TimerTask timerTask;
 
 
     @Override
@@ -49,9 +55,23 @@ public class PlayService extends Service {
         filter.addAction(App.BROADCAST_SEND_TO_PLAY_SERVICE);
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.registerReceiver(receiver,filter);
-
         setMediaListener();
 
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                Intent intent = new Intent();
+                intent.setAction(App.BROADCAST_SEND_TO_SEEKBAR);
+                if (mediaPlayer.isPlaying()) {
+                    currDuration = mediaPlayer.getCurrentPosition();
+                }
+                intent.putExtra("currDuration",currDuration);
+                localBroadcastManager.sendBroadcast(intent);
+            }
+        };
+
+        timer = new Timer();
+        timer.schedule(timerTask,0,1000);
     }
 
     private void setMediaListener() {
@@ -121,6 +141,10 @@ public class PlayService extends Service {
         stopSelf();
         if (localBroadcastManager != null)
             localBroadcastManager.unregisterReceiver(receiver);
+        if(timer != null) {
+            timer.cancel();
+            timer = null;
+        }
         super.onDestroy();
     }
 
@@ -149,6 +173,8 @@ public class PlayService extends Service {
                     intent.putExtra("nowSong",songList.get(currPosition));
                     localBroadcastManager.sendBroadcast(intent);
                     mediaPlayer.start();
+                    duration = mediaPlayer.getDuration();
+                    currDuration = mediaPlayer.getCurrentPosition();
                 }
             });
         } catch (IOException e) {
@@ -249,6 +275,14 @@ public class PlayService extends Service {
                 case App.PLAY_SONG:
                     if (songList != null) {
                         pauseAndresume();
+                    }
+                    break;
+
+                case  App.ADJUST_SEEKBAR:
+
+                    mediaPlayer.seekTo(currDuration);
+                    if (!mediaPlayer.isPlaying()) {
+                        mediaPlayer.start();
                     }
             }
         }

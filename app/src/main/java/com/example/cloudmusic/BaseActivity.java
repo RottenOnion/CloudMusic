@@ -58,6 +58,8 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         ViewGroup decorView = (ViewGroup) getWindow().getDecorView();
         contentContainer = (FrameLayout) ((ViewGroup)decorView.getChildAt(0)).getChildAt(1);
@@ -73,6 +75,7 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
         btnNext.setOnClickListener(this);
         btnPlayPause.setOnClickListener(this);
         btnPrev.setOnClickListener(this);
+
 
         Log.d("cao","onCreate");
 

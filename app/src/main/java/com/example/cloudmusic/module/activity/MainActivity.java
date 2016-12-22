@@ -39,7 +39,11 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Intent serviceIntent = new Intent(MainActivity.this, PlayService.class);
         startService(serviceIntent);

@@ -3,7 +3,8 @@
     android:id="@+id/song_view"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="55dp">
+    android:layout_height="55dp"
+    android:background="?android:attr/selectableItemBackground">
 
     <TextView
         android:gravity="center"
@@ -29,6 +30,8 @@
             android:textSize="@dimen/main_text_size"
             android:textColor="#000000"
             android:text="我喜欢的音乐"
+            android:lines="1"
+            android:ellipsize="end"
             />
 
         <TextView
@@ -38,7 +41,9 @@
             android:layout_marginTop="1dp"
             android:textSize="@dimen/sub_text_size"
             android:textColor="#8d8888"
-            android:text="335首"/>
+            android:text="335首"
+            android:lines="1"
+            android:ellipsize="end"/>
 
     </LinearLayout>
 
@@ -48,8 +53,11 @@
         android:gravity="right">
         <ImageButton
             android:id="@+id/song_btn"
-            android:layout_width="wrap_content"
+            android:layout_width="40dp"
             android:layout_height="match_parent"
+            android:src="@mipmap/icon_threepoint"
+            android:scaleType="center"
+            android:background="?android:attr/selectableItemBackground"
             />
     </LinearLayout>
 
