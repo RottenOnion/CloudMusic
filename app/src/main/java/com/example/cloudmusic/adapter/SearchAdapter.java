@@ -43,7 +43,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.searchVH>{
         SongData song = songDatas.get(position);
         holder.songName.setText(song.getSongname());
         holder.songNumber.setText(String.valueOf(position+1));
-        holder.singerName.setText(song.getSingername());
+        holder.singerName.setText(song.getSingername()+" - " +song.getAlbumname());
     }
 
     @Override

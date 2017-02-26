@@ -1,4 +1,4 @@
-package com.example.cloudmusic.module.activity;
+package com.example.cloudmusic.view;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -14,13 +14,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.example.cloudmusic.BaseActivity;
 import com.example.cloudmusic.R;
 import com.example.cloudmusic.adapter.LibraryAdapter;
 import com.example.cloudmusic.adapter.RecycleViewDivider;
 import com.example.cloudmusic.bean.Library;
+import com.example.cloudmusic.model.database.DatabaseHelper;
 import com.example.cloudmusic.listener.OnItemClickListener;
-import com.example.cloudmusic.module.service.PlayService;
+import com.example.cloudmusic.service.PlayService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,16 +31,12 @@ public class MainActivity extends BaseActivity {
     private Toolbar toolbar;
     private LibraryAdapter adapter;
     private DrawerLayout drawerLayout;
-
+    DatabaseHelper dbHelper ;
 
     private List<Library> libraries;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
 
         super.onCreate(savedInstanceState);
 
@@ -55,7 +51,7 @@ public class MainActivity extends BaseActivity {
         toolbar.setTitle("音乐");
         setSupportActionBar(toolbar);
 
-                ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.app_name,R.string.app_name);
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.app_name,R.string.app_name);
         drawerToggle.syncState();
         drawerLayout.addDrawerListener(drawerToggle);
 
@@ -70,15 +66,17 @@ public class MainActivity extends BaseActivity {
                 if (position == 0) {
                     Intent intent = new Intent(MainActivity.this,LibraryActivity.class);
                     startActivity(intent);
+                } else if (position == 1) {
+                    Intent intent = new Intent(MainActivity.this,RecentActivity.class);
+                    startActivity(intent);
+                } else if (position == 2) {
+
                 }
             }
         });
         libraryRv.setAdapter(adapter);
 
-
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -122,6 +120,18 @@ public class MainActivity extends BaseActivity {
         library4.setTittle("我的歌手");
         library4.setCount(0);
         libraries.add(library4);
+
+        Library library5 = new Library();
+        library5.setImageSource(R.drawable.album_test);
+        library5.setTittle("我喜欢的音乐");
+        library5.setCount(0);
+        libraries.add(library5);
+
+        Library library6 = new Library();
+        library6.setImageSource(R.drawable.like);
+        library6.setTittle("我喜欢的音乐");
+        library6.setCount(10);
+        libraries.add(library6);
 
     }
 

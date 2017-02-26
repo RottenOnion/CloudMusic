@@ -37,7 +37,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.songVH>{
     public void onBindViewHolder(songVH holder, int position) {
         SongData SongData = list.get(position);
         holder.songName.setText(SongData.getSongname());
-        holder.songSinger.setText(SongData.getSingername());
+        holder.songSinger.setText(SongData.getSingername()+" - "+SongData.getAlbumname());
         holder.songNumber.setText(String.valueOf(position));
     }
 

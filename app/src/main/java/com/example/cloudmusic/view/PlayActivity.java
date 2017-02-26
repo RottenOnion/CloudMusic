@@ -1,6 +1,5 @@
-package com.example.cloudmusic.module.activity;
+package com.example.cloudmusic.view;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -9,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageButton;
@@ -19,18 +17,24 @@ import android.widget.TextView;
 import com.example.cloudmusic.App;
 import com.example.cloudmusic.R;
 import com.example.cloudmusic.bean.SongData;
+import com.example.cloudmusic.receiver.PlayUIReceiver;
+import com.example.cloudmusic.receiver.SeekBarReceiver;
+import com.example.cloudmusic.utils.PlayControl;
+import com.example.cloudmusic.view.ui.LrcView;
+import com.example.cloudmusic.view.viewInterface.PlayView;
 
 import java.text.SimpleDateFormat;
 
 import static com.example.cloudmusic.App.currDuration;
 import static com.example.cloudmusic.App.duration;
 import static com.example.cloudmusic.App.isPlay;
+import static com.example.cloudmusic.App.nowSong;
 
 /**
  * Created by py on 2016/12/21.
  */
 
-public class PlayActivity extends AppCompatActivity implements View.OnClickListener{
+public class PlayActivity extends AppCompatActivity implements View.OnClickListener,PlayView{
 
     private Toolbar toolbar;
     private ImageButton btnPlay,btnPrev,btnNext,btnVoice,btnMode;
@@ -43,24 +47,28 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private PlayUIReceiver playUIReceive;
     private SeekBarReceiver seekBarReceiver;
     private SimpleDateFormat simpleDateFormat;
+    private LrcView lrcView;
+    private PlayControl playControl;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
         initView();
+
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
 
         //设置receiver
-        playUIReceive = new PlayUIReceiver();
+        playUIReceive = new PlayUIReceiver(this);
         IntentFilter filter = new IntentFilter();
         filter.addAction(App.BROADCAST_SEND_TO_UPDATE);
         localBroadcastManager.registerReceiver(playUIReceive,filter);
-        seekBarReceiver = new SeekBarReceiver();
+        seekBarReceiver = new SeekBarReceiver(this);
         IntentFilter filter1 = new IntentFilter();
         filter1.addAction(App.BROADCAST_SEND_TO_SEEKBAR);
         localBroadcastManager.registerReceiver(seekBarReceiver,filter1);
 
+        playControl = new PlayControl(localBroadcastManager);
 
         Intent intent = getIntent();
         playMode = intent.getIntExtra("playMode",0);
@@ -69,8 +77,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         toolbar.setTitle(playSong.getSongname());
         toolbar.setSubtitle(playSong.getSingername());
-        toolbar.setTitleTextColor(getResources().getColor(R.color.allWhite));
-        toolbar.setSubtitleTextColor(getResources().getColor(R.color.titleGrey));
+        //toolbar.setTitleTextColor(getResources().getColor(R.color.allWhite));
+        //toolbar.setSubtitleTextColor(getResources().getColor(R.color.titleGrey));
         toolbar.setNavigationIcon(R.mipmap.icon_return);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -79,11 +87,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 finish();
             }
         });
-
-
-
     }
-
 
     @Override
     protected void onResume() {
@@ -97,6 +101,13 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         durationText.setText(simpleDateFormat.format(duration));
         seekBar.setMax(duration);
         seekBar.setProgress(currDuration);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                lrcView.setLrcPath(nowSong.getLrc_path());
+            }
+        }).start();
+        lrcView.onProgress(currDuration);
     }
 
     @Override
@@ -105,35 +116,39 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
-    public class PlayUIReceiver extends BroadcastReceiver {
+    @Override
+    public void receiveUiBroadcast(Context context, Intent intent) {
+        isPlay = intent.getBooleanExtra("isPlay",false);
+        playSong = intent.getParcelableExtra("nowSong");
+        duration = intent.getIntExtra("duration",0);
+        toolbar.setTitle(playSong.getSongname());
+        toolbar.setSubtitle(playSong.getSingername());
+        seekBar.setMax(duration);
+        if (isPlay) {
+            btnPlay.setImageResource(R.mipmap.big_pause);
+        } else {
+            btnPlay.setImageResource(R.mipmap.big_play);
+        }
+        durationText.setText(simpleDateFormat.format(duration));
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            isPlay = intent.getBooleanExtra("isPlay",false);
-            playSong = intent.getParcelableExtra("nowSong");
-            duration = intent.getIntExtra("duration",0);
-            toolbar.setTitle(playSong.getSongname());
-            toolbar.setSubtitle(playSong.getSingername());
-            seekBar.setMax(duration);
-            if (isPlay) {
-                btnPlay.setImageResource(R.mipmap.big_pause);
-            } else {
-                btnPlay.setImageResource(R.mipmap.big_play);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                lrcView.setLrcPath(playSong.getLrc_path());
             }
-            durationText.setText(simpleDateFormat.format(duration));
-        }
+        }).start();
     }
 
-    public class SeekBarReceiver extends BroadcastReceiver {
+    @Override
+    public void recevieSeekBarBroadcast(Context context, Intent intent) {
+        currDuration = intent.getIntExtra("currDuration",0);
+        seekBar.setProgress(currDuration);
+        currtimeText.setText(simpleDateFormat.format(currDuration));
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            currDuration = intent.getIntExtra("currDuration",0);
-            seekBar.setProgress(currDuration);
-            currtimeText.setText(simpleDateFormat.format(currDuration));
-
-        }
+        lrcView.onProgress(currDuration);
+        //lrcView.onDrag(seekBar.getProgress());
     }
+
 
     private void initView() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -145,6 +160,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         seekBar = (SeekBar) findViewById(R.id.play_bar);
         currtimeText = (TextView) findViewById(R.id.time_now);
         durationText = (TextView) findViewById(R.id.time_sum);
+        lrcView = (LrcView) findViewById(R.id.lrc_view);
 
         btnMode.setOnClickListener(this);
         btnPrev.setOnClickListener(this);
@@ -152,7 +168,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         btnNext.setOnClickListener(this);
         btnVoice.setOnClickListener(this);
         simpleDateFormat = new SimpleDateFormat("mm:ss");
-
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -161,12 +176,12 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                Log.d("shit","seekbar start change");
 
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                lrcView.onDrag(seekBar.getProgress());
                 Intent intent = new Intent();
                 intent.setAction(App.BROADCAST_SEND_TO_PLAY_SERVICE);
                 intent.putExtra("instruction",App.ADJUST_SEEKBAR);
@@ -180,10 +195,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     btnPlay.setImageResource(R.mipmap.big_play);
                 }
+
             }
         });
-
-
     }
 
     @Override
@@ -194,32 +208,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.btn_prev_song:
-                Intent prevIntent = new Intent();
-                prevIntent.setAction(App.BROADCAST_SEND_TO_PLAY_SERVICE);
-                prevIntent.putExtra("instruction",App.PREV_SONG);
-                localBroadcastManager.sendBroadcast(prevIntent);
+                playControl.preSong();
                 break;
 
             case R.id.btn_play_pause:
-                if (isPlay) {
-                    btnPlay.setImageResource(R.mipmap.big_play);
-                    isPlay = false;
-                } else {
-                    btnPlay.setImageResource(R.mipmap.big_pause);
-                    isPlay = true;
-                }
-
-                Intent playIntent = new Intent();
-                playIntent.setAction(App.BROADCAST_SEND_TO_PLAY_SERVICE);
-                playIntent.putExtra("instruction",App.PLAY_SONG);
-                localBroadcastManager.sendBroadcast(playIntent);
+                playControl.playPause(btnPlay);
                 break;
 
             case R.id.btn_next_song:
-                Intent nextIntent = new Intent();
-                nextIntent.setAction(App.BROADCAST_SEND_TO_PLAY_SERVICE);
-                nextIntent.putExtra("instruction",App.NEXT_SONG);
-                localBroadcastManager.sendBroadcast(nextIntent);
+                playControl.nextSong();
                 break;
 
             case R.id.btn_voice:

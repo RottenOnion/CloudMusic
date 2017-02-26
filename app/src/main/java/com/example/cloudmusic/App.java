@@ -25,6 +25,7 @@ public class App extends Application {
     public static SongData nowSong;
     public static boolean isPlay;
     public static int duration = 0,currDuration = 0;
+    public static final int newVersion = 6;
 
 
     @Override

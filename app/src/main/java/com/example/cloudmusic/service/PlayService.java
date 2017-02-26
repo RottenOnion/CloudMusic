@@ -1,10 +1,13 @@
-package com.example.cloudmusic.module.service;
+package com.example.cloudmusic.service;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
@@ -14,8 +17,10 @@ import android.widget.Toast;
 
 import com.example.cloudmusic.App;
 import com.example.cloudmusic.bean.SongData;
+import com.example.cloudmusic.model.database.DatabaseHelper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Timer;
@@ -27,6 +32,7 @@ import static com.example.cloudmusic.App.SEQUENTIAL;
 import static com.example.cloudmusic.App.SINGLE;
 import static com.example.cloudmusic.App.currDuration;
 import static com.example.cloudmusic.App.duration;
+import static com.example.cloudmusic.App.nowSong;
 
 /**
  * Created by py on 2016/12/13.
@@ -39,16 +45,18 @@ public class PlayService extends Service {
     private int playMode = App.LISTLOOP;
     private PlayServiceReceiver receiver;
     private List<SongData> songList;
-    private int currPosition;
+    private int currPosition ;
     private LocalBroadcastManager localBroadcastManager;
     private Timer timer;
     private TimerTask timerTask;
+    private DatabaseHelper dbhelper;
+
 
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Toast.makeText(PlayService.this, "服务开启了！没毛病", Toast.LENGTH_SHORT).show();
+
         mediaPlayer = new MediaPlayer();
         receiver = new PlayServiceReceiver();
         IntentFilter filter = new IntentFilter();
@@ -56,6 +64,8 @@ public class PlayService extends Service {
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.registerReceiver(receiver,filter);
         setMediaListener();
+
+        songList = new ArrayList<>();
 
         timerTask = new TimerTask() {
             @Override
@@ -72,6 +82,38 @@ public class PlayService extends Service {
 
         timer = new Timer();
         timer.schedule(timerTask,0,1000);
+
+        dbhelper = new DatabaseHelper(this,null,App.newVersion);
+        SQLiteDatabase db = dbhelper.getWritableDatabase();
+        SongData recentSong = new SongData();
+        Cursor cursor = db.query("recent",null,null,null,null,null,null);
+        if (cursor.moveToLast()) {
+            recentSong.setSongid(cursor.getInt(cursor.getColumnIndex("songid")));
+            recentSong.setSingerid(cursor.getInt(cursor.getColumnIndex("singerid")));
+            recentSong.setM4a(cursor.getString(cursor.getColumnIndex("m4a")));
+            recentSong.setSongname(cursor.getString(cursor.getColumnIndex("songname")));
+            recentSong.setMedia_mid(cursor.getString(cursor.getColumnIndex("media_mid")));
+            recentSong.setAlbumname(cursor.getString(cursor.getColumnIndex("albumname")));
+            recentSong.setDownUrl(cursor.getString(cursor.getColumnIndex("downUrl")));
+            recentSong.setSingername(cursor.getString(cursor.getColumnIndex("singername")));
+            recentSong.setMedia_mid(cursor.getString(cursor.getColumnIndex("strMediaMid")));
+            recentSong.setAlbummid(cursor.getString(cursor.getColumnIndex("albummid")));
+            recentSong.setSongmid(cursor.getString(cursor.getColumnIndex("songmid")));
+            recentSong.setAlbumpic_big(cursor.getString(cursor.getColumnIndex("albumpic_big")));
+            recentSong.setAlbumpic_small(cursor.getString(cursor.getColumnIndex("albumpic_small")));
+            recentSong.setAlbumid(cursor.getString(cursor.getColumnIndex("albumid")));
+            recentSong.setLrc_path(cursor.getString(cursor.getColumnIndex("lrc_path")));
+        }
+
+        App.nowSong = recentSong;
+        Intent intent = new Intent();
+        intent.setAction(App.BROADCAST_SEND_TO_UPDATE);
+        intent.putExtra("isPlay",false);
+        intent.putExtra("playMode",playMode);
+        intent.putExtra("nowSong",nowSong);
+        localBroadcastManager.sendBroadcast(intent);
+        songList.add(nowSong);
+        currPosition = 0;
     }
 
     private void setMediaListener() {
@@ -145,6 +187,9 @@ public class PlayService extends Service {
             timer.cancel();
             timer = null;
         }
+        if (dbhelper !=null) {
+            dbhelper.close();
+        }
         super.onDestroy();
     }
 
@@ -175,6 +220,31 @@ public class PlayService extends Service {
                     mediaPlayer.start();
                     duration = mediaPlayer.getDuration();
                     currDuration = mediaPlayer.getCurrentPosition();
+
+                    //数据库操作
+                    SQLiteDatabase db = dbhelper.getWritableDatabase();
+                    String arg[] = {String.valueOf(songList.get(currPosition).getSongid())};
+                    db.delete("recent","songid = ?",arg);
+
+                    ContentValues values = new ContentValues();
+                    values.put("songid",songList.get(currPosition).getSongid());
+                    values.put("songname",songList.get(currPosition).getSongname());
+                    values.put("singername",songList.get(currPosition).getSingername());
+                    values.put("m4a",songList.get(currPosition).getM4a());
+                    values.put("media_mid",songList.get(currPosition).getMedia_mid());
+                    values.put("singerid",songList.get(currPosition).getSingerid());
+                    values.put("albumname",songList.get(currPosition).getAlbumname());
+                    values.put("downUrl",songList.get(currPosition).getDownUrl());
+                    values.put("strMediaMid",songList.get(currPosition).getStrMediaMid());
+                    values.put("albummid",songList.get(currPosition).getAlbummid());
+                    values.put("songmid",songList.get(currPosition).getSongmid());
+                    values.put("albumpic_big",songList.get(currPosition).getAlbumpic_big());
+                    values.put("albumpic_small",songList.get(currPosition).getAlbumpic_small());
+                    values.put("albumid",songList.get(currPosition).getAlbumid());
+                    values.put("lrc_path",songList.get(currPosition).getLrc_path());
+                    db.insert("recent",null,values);
+                    values.clear();
+
                 }
             });
         } catch (IOException e) {
@@ -187,8 +257,11 @@ public class PlayService extends Service {
 
             mediaPlayer.pause();
         }
-        else if (mediaPlayer !=null && !mediaPlayer.isPlaying()) {
+        else if (mediaPlayer !=null && !mediaPlayer.isPlaying() && mediaPlayer.getDuration()!=0) {
             mediaPlayer.start();
+        }
+        else if(mediaPlayer != null && mediaPlayer.getDuration()==0) {
+            play(nowSong.getM4a());
         }
     }
 
@@ -224,8 +297,8 @@ public class PlayService extends Service {
             case SEQUENTIAL:
             case LISTLOOP:
                 currPosition--;
-                if (currPosition >= songList.size()) {
-                    currPosition = 0;
+                if (currPosition < 0) {
+                    currPosition = songList.size() - 1;
                 }
                 play(songList.get(currPosition).getM4a());
 

@@ -8,27 +8,28 @@ import android.os.Parcelable;
  */
 
 public class SongData implements Parcelable {
-    private String m4a;
-    private String media_mid;
+    private String m4a ;
+    private String media_mid ;
     private int songid;
     private int singerid;
-    private String albumname;
-    private String downUrl;
-    private String singername;
-    private String songname;
-    private String strMediaMid;
-    private String albummid;
-    private String songmid;
-    private String albumpic_big;
-    private String albumpic_small;
-    private String albumid;
+    private String albumname ;
+    private String downUrl ;
+    private String singername ;
+    private String songname ;
+    private String strMediaMid ;
+    private String albummid ;
+    private String songmid ;
+    private String albumpic_big ;
+    private String albumpic_small ;
+    private String albumid ;
+    private String lrc_path;
 
     public SongData() {
     }
 
     public SongData(String m4a, String media_mid, int songid, int singerid, String albumname,
                     String downUrl, String singername, String songname, String strMediaMid,
-                    String albummid, String songmid, String albumpic_big, String albumpic_small, String albumid) {
+                    String albummid, String songmid, String albumpic_big, String albumpic_small, String albumid,String lrc_path) {
         this.m4a = m4a;
         this.media_mid = media_mid;
         this.songid = songid;
@@ -43,6 +44,7 @@ public class SongData implements Parcelable {
         this.albumpic_big = albumpic_big;
         this.albumpic_small = albumpic_small;
         this.albumid = albumid;
+        this.lrc_path = lrc_path;
     }
 
     public String getM4a() {
@@ -157,6 +159,14 @@ public class SongData implements Parcelable {
         this.albumid = albumid;
     }
 
+    public void setLrc_path(String lrc_path) {
+        this.lrc_path = lrc_path;
+    }
+
+    public String getLrc_path() {
+        return  lrc_path;
+    }
+
     @Override
     public String toString() {
         return "SongData{" +
@@ -198,6 +208,7 @@ public class SongData implements Parcelable {
         parcel.writeString(albumpic_big);
         parcel.writeString(albumpic_small);
         parcel.writeString(albumid);
+        parcel.writeString(lrc_path);
     }
 
     public static final Parcelable.Creator<SongData> CREATOR = new Creator<SongData>() {
@@ -205,7 +216,8 @@ public class SongData implements Parcelable {
         public SongData createFromParcel(Parcel parcel) {
             return new SongData(parcel.readString(),parcel.readString(),parcel.readInt(),parcel.readInt(),
                     parcel.readString(),parcel.readString(),parcel.readString(),parcel.readString(),
-                    parcel.readString(),parcel.readString(),parcel.readString(),parcel.readString(),parcel.readString(),parcel.readString());
+                    parcel.readString(),parcel.readString(),parcel.readString(),parcel.readString(),parcel.readString(),parcel.readString(),
+                    parcel.readString());
         }
 
         @Override

@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    android:background="@drawable/testbackground"
+    android:background="@drawable/ic_blackground"
     >
 
 
@@ -20,15 +20,39 @@
         >
     </android.support.v7.widget.Toolbar>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#33ffffff"/>
 
 
-    <FrameLayout
+
+    <LinearLayout
         android:id="@+id/play_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.75">
+        android:layout_weight="0.75"
+        android:orientation="horizontal"
+        >
 
-    </FrameLayout>
+        <com.example.cloudmusic.view.ui.LrcView
+
+            xmlns:lrc="http://schemas.android.com/apk/res/com.example.cloudmusic"
+            android:id="@+id/lrc_view"
+            android:layout_width="match_parent"
+            android:background="#00000000"
+            android:layout_height="match_parent"
+            lrc:dividerHeight="20dp"
+            lrc:currentTextColor="@color/allWhite"
+            lrc:normalTextColor="#9d9a9a"
+            lrc:rows="9"
+            android:textSize="17sp"
+            android:layout_gravity="center_vertical"
+            />
+
+    </LinearLayout>
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
